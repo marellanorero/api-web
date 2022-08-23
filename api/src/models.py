@@ -28,3 +28,30 @@ class User (db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+
+class Contact(db.Model):
+    __tablename__ = 'contacts'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    phone = db.Column(db.String(200), nullable=False)
+    email = db.Column(db.String(200))
+    user_id= db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "phone":self.phone,
+            "email":self.email
+        }
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+    
+    def update(self):
+        db.session.commit()
+    
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
