@@ -9,7 +9,9 @@ app.url_map.strict_slashes = False
 app.config['DEBUG'] = True
 app.config['ENV'] = 'development'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'dialect+driver://user:pass@host:port/database'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres:postgre@localhost:5432/postgres'
 app.config['JWT_SECRET_KEY'] = 'my-secret-key'
 db.init_app(app)
 Migrate(app, db)
@@ -20,6 +22,21 @@ jwt = JWTManager(app)
 def main():
     return render_template('index.html')
 
+@app.route('/api/users', methods=['GET'])
+@app.route('/api/users/<int:id>', methods=['GET'])
+def users(id = None):
+    if request.method == 'GET':
+        if id is not None:
+            user = User.query.get(id)
+            if not user: return jsonify({"msg":"User not found"}), 404
+            return jsonify(user.serialize()), 200
+        else:
+            users = User.query.all()
+            users = list(map(lambda user: user.serialize(), users))
+
+            return jsonify(users), 200
+
+
 @app.route('/api/contacts', methods=['GET', 'POST'])
 @app.route('/api/contacts/<int:id>', methods=['GET', 'PUT', 'DELETE'])
 def contacts(id = None):
@@ -29,7 +46,7 @@ def contacts(id = None):
             if not contact: return jsonify({"msg":"Contact not found"}), 404
             return jsonify(contact.serialize()), 200
         else:
-            contacts = Contact.query.all()
+            contacts = Contact.query.order_by("id").all()
             contacts = list(map(lambda contact: contact.serialize(), contacts))
 
             return jsonify(contacts), 200
@@ -78,6 +95,7 @@ def contacts(id = None):
         contact.delete()
 
         return jsonify({"msg":"success, user was deleted"}), 200
+        
 
 if __name__ == '__main__':
     app.run()

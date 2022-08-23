@@ -9,13 +9,13 @@ import ContactList from "./views/admin/contacts";
 import EditContact from "./views/admin/contacts/edit";
 
 const App = () => {
-    return(
-        <BrowserRouter> 
+    return (
+        <BrowserRouter>
             <Navbar />
             <Switch>
-                <Route exact path="/admin/contact/:id/edit"  component={EditContact} />
-                <Route exact path="/admin/contacts"  component={ContactList} />
-                <Route exact path="/"  component={Home} />
+                <Route exact path="/admin/contact/:id/edit" component={EditContact} />
+                <Route exact path="/admin/contacts" component={ContactList} />
+                <Route exact path="/" component={Home} />
             </Switch>
         </BrowserRouter>
     )
